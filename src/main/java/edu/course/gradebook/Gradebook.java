@@ -115,7 +115,7 @@ public class Gradebook {
         }
         UndoAction action = undoStack.pop();
         action.undo(this);
-        activityLog.add("Undid action " + action);
+        activityLog.add("Undid action");
         return true;
     }
 
@@ -124,7 +124,7 @@ public class Gradebook {
         if (activityLog.isEmpty()){
             return logs;
         }
-        int start = activityLog.size()- maxItems;
+        int start = Math.max(0, activityLog.size()- maxItems);
         return activityLog.subList(start, activityLog.size());
     }
 }
