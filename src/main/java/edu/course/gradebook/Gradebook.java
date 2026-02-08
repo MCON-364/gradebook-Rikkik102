@@ -61,22 +61,70 @@ public class Gradebook {
     }
 
     public Optional<Double> averageFor(String name) {
-        throw new UnsupportedOperationException();
+        if (!(gradesByStudent.containsKey(name)) || gradesByStudent.get(name).isEmpty()) {
+            return Optional.empty();
+        }
+        double total = 0;
+        for (Integer grade: gradesByStudent.get(name)) {
+           total += grade;
+        }
+        return Optional.of(total/gradesByStudent.get(name).size());
     }
 
     public Optional<String> letterGradeFor(String name) {
-        throw new UnsupportedOperationException();
+        Optional<Double> numberAverage = averageFor(name);
+        if (numberAverage.isEmpty()) {
+            return  Optional.empty();
+        }
+        else {
+            var numberGrade = numberAverage.get();
+            int firstNumber = (int)(numberGrade / 10);
+            String letterGrade = switch(firstNumber) {
+                case 10, 9 ->  { yield "A";}
+                case 8 -> { yield "B"; }
+                case 7 -> { yield "C"; }
+                case 6 -> { yield "D"; }
+                default -> { yield "F"; }
+            };
+            return Optional.of(letterGrade);
+        }
     }
 
     public Optional<Double> classAverage() {
-        throw new UnsupportedOperationException();
+        if (gradesByStudent.isEmpty()) {
+            return Optional.empty();
+        } else {
+            double total = 0;
+            int numGrades = 0;
+            for (String student : gradesByStudent.keySet()) {
+                for (int grade : gradesByStudent.get(student)) {
+                    total += grade;
+                    numGrades ++;
+                }
+            }
+            if (total == 0) {
+                return Optional.empty();
+            }
+            return Optional.of(total/numGrades);
+        }
     }
 
     public boolean undo() {
-        throw new UnsupportedOperationException();
+        if  (undoStack.isEmpty()) {
+            return false;
+        }
+        UndoAction action = undoStack.pop();
+        action.undo(this);
+        activityLog.add("Undid action " + action);
+        return true;
     }
 
     public List<String> recentLog(int maxItems) {
-        throw new UnsupportedOperationException();
+        List<String> logs = new ArrayList<>();
+        if (activityLog.isEmpty()){
+            return logs;
+        }
+        int start = activityLog.size()- maxItems;
+        return activityLog.subList(start, activityLog.size());
     }
 }
