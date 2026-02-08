@@ -91,9 +91,6 @@ public class Gradebook {
     }
 
     public Optional<Double> classAverage() {
-        if (gradesByStudent.isEmpty()) {
-            return Optional.empty();
-        } else {
             double total = 0;
             int numGrades = 0;
             for (String student : gradesByStudent.keySet()) {
@@ -102,11 +99,10 @@ public class Gradebook {
                     numGrades ++;
                 }
             }
-            if (total == 0) {
+            if (numGrades == 0) {
                 return Optional.empty();
             }
             return Optional.of(total/numGrades);
-        }
     }
 
     public boolean undo() {
@@ -115,7 +111,7 @@ public class Gradebook {
         }
         UndoAction action = undoStack.pop();
         action.undo(this);
-        activityLog.add("Undid action");
+        activityLog.add("Undo action");
         return true;
     }
 
