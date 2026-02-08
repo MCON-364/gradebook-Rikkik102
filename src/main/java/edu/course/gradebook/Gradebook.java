@@ -13,15 +13,51 @@ public class Gradebook {
     }
 
     public boolean addStudent(String name) {
-        throw new UnsupportedOperationException();
+        if (gradesByStudent.containsKey(name)) {
+            return false;
+        }
+        else {
+            gradesByStudent.put(name, new ArrayList<Integer>());
+            activityLog.add("Added student " + name);
+            return true;
+        }
+    }
+
+
+    public Map<String, List<Integer>> getGradesByStudent() {
+        return gradesByStudent;
+    }
+    public LinkedList<String> getActivityLog() {
+        return activityLog;
     }
 
     public boolean addGrade(String name, int grade) {
-        throw new UnsupportedOperationException();
+        if (!(gradesByStudent.containsKey(name))) {
+            return false;
+        }
+        else {
+            gradesByStudent.get(name).add(grade);
+            activityLog.add("Added grade " + grade + " to student " + name);
+            undoStack.push(Gradebook -> {
+                gradesByStudent.get(name).removeLast();
+            });
+            return true;
+        }
     }
 
     public boolean removeStudent(String name) {
-        throw new UnsupportedOperationException();
+        if  (!(gradesByStudent.containsKey(name))) {
+            return false;
+        }
+        else {
+            List<Integer> removedGrades = gradesByStudent.get(name);
+            gradesByStudent.remove(name);
+            activityLog.add("Removed student " + name);
+            undoStack.push(Gradebook -> {
+                gradesByStudent.put(name, removedGrades);
+            });
+            return true;
+        }
     }
 
     public Optional<Double> averageFor(String name) {
